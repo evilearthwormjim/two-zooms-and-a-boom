@@ -1,46 +1,79 @@
 <html>
-    <head>
-        <title>Two Zooms and a Boom</title>
-        <link rel="stylesheet" href="styles.css">
-        <script src="/sockjs-0.3.4.js"></script>
-        <script src="/stomp.js"></script>
-        <script src="/app.js"></script>
-    </head>
-    
-    <body onload="connect()" onunload="disconnect()">
-        <div>
-            
-            <div id="lobby-area">
-            	<input type="text" id="player-name" placeholder="Choose a nickname" value="Peter" />
-                <button id="join-lobby" onclick="joinLobby();">Join Lobby</button>
-                <div id="lobby-listing"></div>
-                
-            </div>
-            <br />
-            <div id="admin-area">
-            	<div class="admin-area-row">
-             		<div class="admin-area-label">Room A Google Meet: <input type="text" id="room-a-url" placeholder="Add google meet" /></div> 
-             		<div class="admin-area-label">Room B Google Meet: <input type="text" id="room-b-url" placeholder="Add google meet" /></div> 
-             	</div>
-                <button id="start-game" onclick="startGame();">Start Game</button>
-            </div>
-            <br />
-             <div id="player-area">
-             	<div class="player-area-row">
-             		<div class="player-area-label">Room:</div> <div id="player-room"  class="player-area-value">
-					<a id="player-room-link" href="" target="blank"></a>
-				</div>
-             	</div>
-             	<br />
-             	<div class="player-area-row">
-             		<div class="player-area-label">Team:</div> <div id="player-team"  class="player-area-value"></div>
-             	</div>
-             	<br />
-             	<div class="player-area-row">
-             		<div class="player-area-label">Role:</div> <div id="player-role" class="player-area-value"></div>
-             	</div>
-             </div>
-        </div>
 
-    </body>
+<head>
+    <title>Two Zooms and a Boom</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/sockjs-0.3.4.js"></script>
+    <script src="/stomp.js"></script>
+    <script src="/app.js"></script>
+</head>
+
+<body onload="connect()" onunload="disconnect()">
+    <div>
+
+        <div id="lobby-area">
+            <input type="text" id="player-name" placeholder="Choose a nickname" value="Peter" />
+            <button id="join-lobby" onclick="joinLobby();">Join Lobby</button>
+            <div id="lobby-listing"></div>
+
+        </div>
+        <br />
+        <div id="admin-area">
+            <div class="admin-area-row">
+                <div class="admin-area-label">Room A Zoom link: <input type="text" id="room-a-url"
+                        placeholder="Add google meet" /></div>
+                <div class="admin-area-label">Room B Zoom link: <input type="text" id="room-b-url"
+                        placeholder="Add google meet" /></div>
+            </div>
+            <button id="start-game" onclick="startGame();">Start Game</button>
+        </div>
+        <br />
+        <div id="player-area">
+            <div id="player-details">
+                <div class="player-area-row">
+                    <div class="player-area-label">Room:</div>
+                    <div id="player-room" class="player-area-value player-area-col">
+                        <a id="player-room-link" href="" target="blank"></a>
+                    </div>
+                </div>
+                <br />
+                <div class="player-area-row">
+                    <div class="player-area-label">Team:</div>
+                    <div id="player-team" class="player-area-value player-area-col"></div>
+                </div>
+                <br />
+                <div class="player-area-row">
+                    <div class="player-area-label">Role:</div>
+                    <div id="player-role" class="player-area-value player-area-col"></div>
+                </div>
+            </div>
+
+            <div id="player-card-area" class="player-area-col">
+                <div class="flip-card">
+                    <div id="player-card-flipper" class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="playingCards">
+                                <div id="card-front" class="card role">
+                                    F
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="playingCards">
+                                <div id="card-back" class="card role">
+                                    B
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="card-bg" class="playingCards">
+                        <div class="card card-effects"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
 </html>

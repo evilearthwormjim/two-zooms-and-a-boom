@@ -35,34 +35,58 @@ function updateLobbyArea(lobbyMessage) {
 	var lobbyListing = document.getElementById('lobby-listing');
 	var p = document.createElement('p');
 	p.style.wordWrap = 'break-word';
-	p.appendChild(document.createTextNode(lobbyMessage.playerName + ": "
-		+ lobbyMessage.assignedRoom + " (" + lobbyMessage.loggedInTime + ")"));
+	p.appendChild(document.createTextNode("(" + lobbyMessage.loggedInTime + ") " + lobbyMessage.playerName + ": "
+		+ lobbyMessage.assignedRoom));
 
 	lobbyListing.appendChild(p);
+	lobbyListing.scrollTop = lobbyListing.scrollHeight - lobbyListing.clientHeight;
 }
 
 
 function updatePlayerArea(player) {
-	var playerArea = document.getElementById('player-area');
+
 	var playerRoom = document.getElementById('player-room-link');
 	var playerTeam = document.getElementById('player-team');
 	var playerRole = document.getElementById('player-role');
+
+	var playerRows = document.querySelectorAll('.player-area-row');
+	var cardFlipper = document.getElementById('player-card-flipper');
+	var cardsElements = document.querySelectorAll('div.card');
+	var teamColours = {
+		"Blue Team":"#3a56a5",
+		"Red Team": "#ee1c26"
+	}
+	var flipClass = "flip-card-reveal";
 
 	playerRoom.innerHTML = player.room.name;
 	playerRoom.href = player.room.url;
 	playerTeam.innerHTML = player.team;
 	playerRole.innerHTML = player.role;
 	
-	assignmentColour = player.team == "Blue Team"? "blue":"red";
-	
-	playerArea.style.backgroundColor = assignmentColour;
+	playerRows.forEach(row => {
+		row.style.backgroundColor = teamColours[player.team];
+	});
 
-	if (player.team == "Blue Team"){
-		
-		
+	cardsElements.forEach(card => {
+		card.style.backgroundColor = teamColours[player.team];
+	});
+
+	var nextCardId = (cardFlipper.classList.contains(flipClass))? 'card-front':'card-back';
+	var nextCardElem = document.getElementById(nextCardId);
+	var nextCardImg = document.createElement('div');
+	var nextCardText = document.createElement('div');
+
+	while (nextCardElem.firstChild) {
+		nextCardElem.removeChild(nextCardElem.lastChild);
 	}
 
-	
+	nextCardImg.classList.add('role-'+player.role.toLowerCase());
+	nextCardText.classList.add('role-label');
+	nextCardText.appendChild(document.createTextNode(player.role));
+	nextCardElem.appendChild(nextCardImg);
+	nextCardElem.appendChild(nextCardText);
+
+	cardFlipper.classList.toggle(flipClass);
 }
 
 

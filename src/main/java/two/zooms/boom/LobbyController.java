@@ -33,7 +33,7 @@ public class LobbyController {
 		if(playerNameTaken) {
 			
 			message.nameAlreadyTaken = playerNameTaken;
-			message.assignedRoom = "Player with that name has already entered the lobby";
+			message.assignedRoom = "Player with that name has already in the lobby";
 		}
 		else {
 			
