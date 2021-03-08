@@ -5,9 +5,12 @@ Two Booms and a Room is a social deduction party game by [Tuesday Night Games](h
 
 This is a version for anyone who wants to play remotely, using Zoom (or Google Meet etc). Each player will get their role assigned privately and a link to one of the two rooms. 
 
-
 ## Getting Started
 
+### Prerequisites
+This is a Spring Boot 5 app built with gradle. 
+
+### Starting the application
 Download the repo, and run:
 
 ```
