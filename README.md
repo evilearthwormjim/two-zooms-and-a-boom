@@ -1,17 +1,23 @@
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
+Two Booms and a Room is a social deduction party game by [Tuesday Night Games](https://www.tuesdayknightgames.com/tworoomsandaboom) where players are divided into 2 rooms and must exchange hostages before the timer runs out.
 
-
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should element DRY principles to the rest of your life :smile:
+This is a version for anyone who wants to play remotely, using Zoom (or Google Meet etc). Each player will get their role assigned privately and a link to one of the two rooms. 
 
 
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Download the repo, and run:
 
+```
+./gradelew bootRun
+```
+
+
+## Running the game
+
+- Players go to `http://localhost:8080`
+- Whoever is running the game can go to `http://localhost:8080/admin.html`
+
+Once all the players have joined, the administrator can click `Start Game` and roles will be reassigned
