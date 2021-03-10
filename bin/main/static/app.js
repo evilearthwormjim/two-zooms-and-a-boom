@@ -80,15 +80,16 @@ function updatePlayerList(playerListings) {
 	playerList.appendChild(defaultOption);
 
 	playerListings.forEach(function (player) {
-		//Set Lobby to only current players
-		updateLobbyArea(player);
 
 		var option = document.createElement('option');
 		option.value = player.playerId;
 		option.text = player.playerName;
 
-		if(player.playerId!=mySessionId)
+		if(player.playerId!=mySessionId){
+			//Set player listings to only other current players
+			updateLobbyArea(player);
 			playerList.appendChild(option);
+		}
 		
 	});
 

@@ -26,6 +26,8 @@ public class GameController {
 	private SimpMessagingTemplate simpMessagingTemplate;
 
 	private Thread thread;
+	
+	private static final String PLAYER_LISTING_TEXT = "%s: Team (%s) - Role (%s)";
 
 	@MessageMapping("/game/start")
 	@SendTo("/topic/game/start")
@@ -45,7 +47,7 @@ public class GameController {
 			LobbyMessage lobbyMessage = new LobbyMessage();
 			lobbyMessage.playerId = k;
 			lobbyMessage.playerName = player.name;
-			lobbyMessage.message = String.format("(%s: Team [Unkown] Role [Unknown]", lobbyMessage.playerName);
+			lobbyMessage.message = String.format(PLAYER_LISTING_TEXT, lobbyMessage.playerName, "?", "?");
 			gameStartMessage.playerListings.add(lobbyMessage);
 			
 			// Publish roles to individual players
@@ -84,14 +86,14 @@ public class GameController {
 		
 		if(RevealedPlayerMessage.REVEAL_TYPE_TEAM == revealedPlayerMessage.revealType) {
 			revealedPlayerMessage.revealedPlayerMessage = 
-						String.format("%s: Team [%s] Role [Unknown]", 
+						String.format(PLAYER_LISTING_TEXT, 
 								revealedPlayer.name, 
-								revealedPlayer.teamRole.team);
+								revealedPlayer.teamRole.team, "?");
 		}
 		else if (RevealedPlayerMessage.REVEAL_TYPE_ROLE == revealedPlayerMessage.revealType){
 			//Role is both team and role
 			revealedPlayerMessage.revealedPlayerMessage = 
-					String.format("%s: Team [%s] Role [%s]", 
+					String.format(PLAYER_LISTING_TEXT, 
 							revealedPlayer.name, 
 							revealedPlayer.teamRole.team, 
 							revealedPlayer.teamRole.role);

@@ -13,7 +13,7 @@ public class GameService {
 	private static final String WAITING_MSG = "Waiting for game to start...";
 	private static final String RED_TEAM = "Red";
 	private static final String BLUE_TEAM = "Blue";
-	private static final String GREY_TEAM = "Grey Team";
+	private static final String GREY_TEAM = "Grey";
 	private static final String ROLE_PRESIDENT = "President";
 	private static final String ROLE_BOMB = "Bomb";
 	private static final String ROLE_MOOK = "Mook";
