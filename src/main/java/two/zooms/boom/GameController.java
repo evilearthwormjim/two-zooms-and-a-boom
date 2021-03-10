@@ -1,53 +1,120 @@
 package two.zooms.boom;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/game")
 public class GameController {
 
-	private static final String ROOM_A = "Room A";
-	private static final String ROOM_B = "Room B";
-	
 	@Autowired
 	public GameService gameService;
-	
+
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
-	
-	@GetMapping("/")
-	public String index() {
-	    return "index";
-	}
-	
-	@PostMapping("/start")
-	public ResponseEntity<String> startGame(@RequestParam("roomAURL") String roomAURL, @RequestParam("roomBURL") String roomBURL) throws Exception {
-		Room roomA = new Room(ROOM_A, roomAURL);
-		Room roomB = new Room(ROOM_B, roomAURL);
-		
+
+	private Thread thread;
+
+	@MessageMapping("/game/startGame")
+	public void startGame(Room[] rooms) throws Exception {
+		Room roomA = new Room(rooms[0].name, rooms[0].url);
+		Room roomB = new Room(rooms[1].name, rooms[1].url);
+
+		//Reset the timer
+		if (thread != null) {
+			thread.interrupt();
+			simpMessagingTemplate.convertAndSend("/topic/game/roundTimer", new RoundTimerMessage());
+		}
+
 		gameService.assignTeamRoles(roomA, roomB);
-		
 		HashMap<String, Player> players = gameService.getPlayers();
 		
-		for(String k : players.keySet()) {
+		// Publish roles to players
+		for (String k : players.keySet()) {
 			SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
 			headerAccessor.setLeaveMutable(true);
 			headerAccessor.setSessionId(k);
-			simpMessagingTemplate.convertAndSendToUser(k, "/queue/role", players.get(k), headerAccessor.getMessageHeaders());
+			simpMessagingTemplate.convertAndSendToUser(k, "/queue/game/player", 
+					players.get(k),
+					headerAccessor.getMessageHeaders());
+			
+			//Send list of other players
+			List<RecipientListMessage> playerNames = new ArrayList<>();
+			players.entrySet().stream().filter(p-> !p.getKey().equals(k)).forEach(elem -> {
+				RecipientListMessage playerName = new RecipientListMessage(elem.getKey(), elem.getValue().name);
+				playerNames.add(playerName);
+			});
+			
+			simpMessagingTemplate.convertAndSendToUser(k, "/queue/game/playerNames", 
+					playerNames,
+					headerAccessor.getMessageHeaders());
 		}
-		
-		return new ResponseEntity<String>("Game On!", HttpStatus.OK);
+	}
+
+	@MessageMapping("/game/playerReveal")
+	public void playerReveal(@Header("simpSessionId") String sessionId, RevealedPlayerMessage revealedPlayerMessage) {
+		String time = new SimpleDateFormat("HH:mm").format(new Date());
+
+		Player revealedPlayer = gameService.findPlayerById(sessionId);
+		revealedPlayerMessage.revealTime = time;
+		revealedPlayerMessage.revealedPlayerName = revealedPlayer.name;
+		revealedPlayerMessage.revealedPlayerSessionId = sessionId;
+
+		SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+		headerAccessor.setLeaveMutable(true);
+		headerAccessor.setSessionId(revealedPlayerMessage.recipientSessionId);
+
+		simpMessagingTemplate.convertAndSendToUser(revealedPlayerMessage.recipientSessionId, "/queue/game/playerReveal",
+				revealedPlayerMessage, headerAccessor.getMessageHeaders());
+	}
+
+	@MessageMapping("/game/startRound")
+	public void startRound(int roundNo) throws Exception {
+
+		RoundTimerMessage roundTimerMessage = new RoundTimerMessage(roundNo);
+		if (thread != null) {
+			thread.interrupt();
+		}
+		this.runCountdownTimer(roundTimerMessage);
+	}
+
+	private void runCountdownTimer(RoundTimerMessage roundTimerMessage) throws InterruptedException {
+
+		Runnable runnable = () -> {
+			try {
+				int roundTime = roundTimerMessage.roundTime;
+				int numberOfMinutes;
+				int numberOfSeconds;
+
+				for (int i = 0; i < roundTime; i++) {
+					TimeUnit.SECONDS.sleep(1);
+					roundTimerMessage.roundTime--;
+					numberOfMinutes = ((roundTimerMessage.roundTime % 86400) % 3600) / 60;
+					numberOfSeconds = ((roundTimerMessage.roundTime % 86400) % 3600) % 60;
+					roundTimerMessage.remainingTime = String.format("%02d", numberOfMinutes) + ":"
+							+ String.format("%02d", numberOfSeconds);
+
+					simpMessagingTemplate.convertAndSend("/topic/game/roundTimer", roundTimerMessage);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		};
+
+		thread = new Thread(runnable);
+		thread.start();
+
 	}
 
 }

@@ -14,6 +14,9 @@ public class LobbyMessage {
 	}
 
 	@Getter @Setter
+	public String playerId;
+	
+	@Getter @Setter
 	public String playerName;
 	
 	@Getter @Setter
@@ -28,4 +31,7 @@ public class LobbyMessage {
 	@Getter @Setter
 	public String roundNo;
 
+	
+	@Getter @Setter
+	public String message;
 }

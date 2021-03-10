@@ -1,50 +1,82 @@
 var stompClient = null;
-
+var mySessionId = "";
 
 function connect() {
-	var socket = new SockJS('/lobby');
-	stompClient = Stomp.over(socket);
-	stompClient.connect({}, function(frame) {
-		console.log('Session Id: '+socket._transport.url); 
-		console.log('Connected: ' + frame);
-		stompClient.subscribe('/topic/lobby', function(lobbyMessage) {
-			updateLobbyArea(JSON.parse(lobbyMessage.body));
-		});
-		stompClient.subscribe('/user/queue/role', function(playerMessage) {
-			updatePlayerArea(JSON.parse(playerMessage.body));
-		});
-	}, function(err) {
-		console.log(err);
+
+	return new Promise((resolve, reject) => {
+		var socket = new SockJS('/2ZaaB');
+
+		if (stompClient == null || !stompClient.connected) {
+			stompClient = Stomp.over(socket);
+			stompClient.connect({}, function (frame) {
+				console.log('Session Id: ' + socket._transport.url);
+				console.log('Connected: ' + frame);
+				stompClient.subscribe('/topic/lobby', function (lobbyMessage) {
+					updateLobbyArea(JSON.parse(lobbyMessage.body));
+				});
+				stompClient.subscribe('/topic/game/roundTimer', function (roundTimerMessage) {
+					updateRoundTimerArea(JSON.parse(roundTimerMessage.body));
+				});
+				stompClient.subscribe('/user/queue/game/player', function (playerMessage) {
+					updatePlayerArea(JSON.parse(playerMessage.body));
+				});
+				stompClient.subscribe('/user/queue/game/playerReveal', function (playerRevealMessage) {
+					updateLobbyRole(JSON.parse(playerRevealMessage.body));
+				});
+				stompClient.subscribe('/user/queue/game/playerNames', function (recipientListMessage) {
+					updateRecipientList(JSON.parse(recipientListMessage.body));
+				});
+
+				resolve('Connected!');
+
+			}, function (err) {
+				console.log(err);
+				reject('Unconnected');
+			});
+		}
+		else {
+			resolve('Already connected!');
+		}
 	});
 }
 
 function disconnect() {
+	
+	document.getElementById('join-lobby').disabled = false;
+	document.getElementById('disconnect').disabled = true;
+
 	if (stompClient != null) {
 		stompClient.disconnect();
 	}
-	setConnected(false);
 	console.log("Disconnected");
 }
 
-function joinLobby() {
-	var playerName = document.getElementById('player-name').value;
-	stompClient.send("/app/lobby", {}, JSON.stringify({ 'playerName': playerName }));
+function updateRecipientList(recipientList){
+	var revealTeam = document.getElementById('reveal-team');
+	var revealRole = document.getElementById('reveal-role');
+	var playerList = document.getElementById('player-list');
+	var defaultOption = document.createElement('option');
+	
+	revealTeam.disabled = false;
+	revealRole.disabled = false;
+	removeAllChildNodes(playerList);
+	
+	defaultOption.value = '-';
+	defaultOption.innerHTML = 'Select Recipient';
+	playerList.appendChild(defaultOption);
+
+	recipientList.forEach(function(recipient) {
+		var option = document.createElement('option');
+		option.value = recipient.playerId;
+		option.text = recipient.playerName;
+		playerList.appendChild(option);
+	});
+
+	playerList.value = '-';
 }
-
-function updateLobbyArea(lobbyMessage) {
-	var lobbyListing = document.getElementById('lobby-listing');
-	var p = document.createElement('p');
-	p.style.wordWrap = 'break-word';
-	p.appendChild(document.createTextNode("(" + lobbyMessage.loggedInTime + ") " + lobbyMessage.playerName + ": "
-		+ lobbyMessage.assignedRoom));
-
-	lobbyListing.appendChild(p);
-	lobbyListing.scrollTop = lobbyListing.scrollHeight - lobbyListing.clientHeight;
-}
-
 
 function updatePlayerArea(player) {
-
+	mySessionId = player.sessionId;
 	var playerRoom = document.getElementById('player-room-link');
 	var playerTeam = document.getElementById('player-team');
 	var playerRole = document.getElementById('player-role');
@@ -53,36 +85,35 @@ function updatePlayerArea(player) {
 	var cardFlipper = document.getElementById('player-card-flipper');
 	var cardsElements = document.querySelectorAll('div.card');
 	var teamColours = {
-		"Blue Team":"#3a56a5",
-		"Red Team": "#ee1c26"
+		"Blue Team": "#3a56a5",
+		"Red Team": "#ee1c26",
+		"Grey Team":"#918585"
 	}
 	var flipClass = "flip-card-reveal";
 
-	playerRoom.innerHTML = player.room.name;
+	playerRoom.innerHTML = player.room.name + " (click to join)";
 	playerRoom.href = player.room.url;
-	playerTeam.innerHTML = player.team;
-	playerRole.innerHTML = player.role;
-	
+	playerTeam.innerHTML = player.teamRole.team;
+	playerRole.innerHTML = player.teamRole.role;
+
 	playerRows.forEach(row => {
-		row.style.backgroundColor = teamColours[player.team];
+		row.style.backgroundColor = teamColours[player.teamRole.team];
 	});
 
 	cardsElements.forEach(card => {
-		card.style.backgroundColor = teamColours[player.team];
+		card.style.backgroundColor = teamColours[player.teamRole.team];
 	});
 
-	var nextCardId = (cardFlipper.classList.contains(flipClass))? 'card-front':'card-back';
+	var nextCardId = (cardFlipper.classList.contains(flipClass)) ? 'card-front' : 'card-back';
 	var nextCardElem = document.getElementById(nextCardId);
 	var nextCardImg = document.createElement('div');
 	var nextCardText = document.createElement('div');
 
-	while (nextCardElem.firstChild) {
-		nextCardElem.removeChild(nextCardElem.lastChild);
-	}
+	removeAllChildNodes(nextCardElem);
 
-	nextCardImg.classList.add('role-'+player.role.toLowerCase());
+	nextCardImg.classList.add('role-' + player.teamRole.role.toLowerCase());
 	nextCardText.classList.add('role-label');
-	nextCardText.appendChild(document.createTextNode(player.role));
+	nextCardText.appendChild(document.createTextNode(player.teamRole.role));
 	nextCardElem.appendChild(nextCardImg);
 	nextCardElem.appendChild(nextCardText);
 
@@ -90,20 +121,30 @@ function updatePlayerArea(player) {
 }
 
 
-function startGame() {
+function updateRoundTimerArea(roundTimerMessage) {
+	var roundNo = document.getElementById('roundNo');
+	var roundTimer = document.getElementById('roundTimer');
 
-	var roomA = document.getElementById('room-a-url').value;
-	var roomB = document.getElementById('room-b-url').value;
-	params = "roomAURL="+ roomA + "&roomBURL="+ roomB;
-	const Http = new XMLHttpRequest();
-	const url = 'http://localhost:8080/game/start';
-	
-	Http.open("POST", url, true);
-	Http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	Http.send(params);
+	roundNo.innerHTML = roundTimerMessage.roundNo;
+	roundTimer.innerHTML = roundTimerMessage.remainingTime;
+}
 
-	Http.onreadystatechange = (e) => {
-		console.log(e.responseText)
+function revealMyRole(revealType) {
+
+	var playerList = document.getElementById('player-list');
+	var playerTeam = document.getElementById('player-team');
+	var playerRole = document.getElementById('player-role');
+
+	recipientSessionId = playerList.value;
+	team = playerTeam.innerHTML;
+	role = (revealType == 2) ? playerRole.innerHTML : "";
+
+	stompClient.send("/app/game/playerReveal", {}, JSON.stringify({ 'recipientSessionId': recipientSessionId, 'team': team, 'role': role }));
+}
+
+
+function removeAllChildNodes(parent) {
+	while (parent.firstChild) {
+		parent.removeChild(parent.lastChild);
 	}
-
 }

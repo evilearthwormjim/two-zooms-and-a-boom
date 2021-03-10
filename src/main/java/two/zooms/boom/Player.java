@@ -10,6 +10,7 @@ public class Player {
 	public Player() {};
 	
 	private UUID uuid = UUID.randomUUID();
+	public String sessionId;
 	
 	@Getter @Setter
 	public String name;
@@ -18,10 +19,7 @@ public class Player {
 	public Room room;
 	
 	@Getter	@Setter
-	public String team;
-	
-	@Getter	@Setter
-	public String role;
+	public TeamRole teamRole;
 
 	public UUID getUuid() {
 		return uuid;

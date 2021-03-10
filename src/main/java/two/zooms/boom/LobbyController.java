@@ -3,12 +3,18 @@ package two.zooms.boom;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Controller
@@ -17,34 +23,48 @@ public class LobbyController {
 	@Autowired
 	public GameService gameService;
 	
+	@Autowired
+	private SimpMessagingTemplate simpMessagingTemplate;
+	
 	private static String WAITING_MSG = "Waiting for game to start...";
 	
-	@MessageMapping("/lobby")
+	@MessageMapping("/lobby/enter")
 	@SendTo("/topic/lobby")
 	public LobbyMessage enterLobby(@Header("simpSessionId") String sessionId, Principal principal, LobbyMessage message) throws Exception {
 	    String time = new SimpleDateFormat("HH:mm").format(new Date());
-
-	    message.loggedInTime = time;
-	    message.assignedRoom = WAITING_MSG;
+	    System.out.print(message.playerName+" joining the game");
+	    Player player = gameService.findPlayerById(sessionId);
 	    
 	    boolean playerNameTaken = gameService.isPlayerNameTaken(message.playerName);
 	    
+	    message.loggedInTime = time;
+	    message.assignedRoom = WAITING_MSG;
+	    message.playerId = sessionId;
+	    
 		if(playerNameTaken) {
-			
-			message.nameAlreadyTaken = playerNameTaken;
-			message.assignedRoom = "Player with that name has already in the lobby";
+			message.nameAlreadyTaken = playerNameTaken && !player.sessionId.equals(sessionId);
+			message.message = "Player with that name has already joined the game";
 		}
 		else {
-			
-			boolean newPlayerRegistered = gameService.registerPlayer(sessionId, message.playerName);
+			player = gameService.registerPlayer(sessionId, message.playerName);
+		    message.message = String.format("(%s) %s: Has joined the game", time, player.name);
 		}
 		
+		
+	    
 		return message;
 	}
 	
-	
 	@EventListener
 	public void onDisconnectEvent(SessionDisconnectEvent event) {
-	    gameService.removePlayer(event.getSessionId());
+		
+		//Sign out player
+	    Player player = gameService.removePlayer(event.getSessionId());
+	    if(player != null) {
+		    String time = new SimpleDateFormat("HH:mm").format(new Date());
+		    LobbyMessage lobbyMessage = new LobbyMessage(player.name, "", time);
+		    lobbyMessage.message = String.format("(%s) %s: Has left the game", time, player.name);
+		    simpMessagingTemplate.convertAndSend("/topic/lobby", lobbyMessage);
+	    }
 	}
 }

@@ -6,16 +6,30 @@
 	<script src="/sockjs-0.3.4.js"></script>
 	<script src="/stomp.js"></script>
 	<script src="/app.js"></script>
+	<script src="/lobby.js"></script>
 </head>
 
-<body onload="connect()" onunload="disconnect()">
+<body onunload="disconnect()">
 	<div>
 		<div id="lobby-area">
-			<input type="text" id="player-name" placeholder="Choose a nickname" value="Peter" />
-			<button id="join-lobby" onclick="joinLobby();">Join Game</button>
-			<p />
+			<div>	
+				<input type="text" id="player-name" placeholder="Choose a nickname" value="" />
+				<button id="join-lobby" onclick="joinLobby();">Join Game</button>
+				<button id="disconnect" onclick="disconnect();" disabled="true">Disconnect</button>
+			</div>
+			<br />
+			Lobby
 			<div id="lobby-listing"></div>
+			<div  style="margin-top: 5px;">
+				<div id="recipient-area">
+					<select name="player" id="player-list">
+						<option value="-">Select Recipient</option>
+					</select>
+					<button id="reveal-team" onclick="revealMyRole(1);" disabled="true">Reveal Team</button>
+					<button id="reveal-role" onclick="revealMyRole(2);" disabled="true">Reveal Role</button>
+				</div>
 
+			</div>
 		</div>
 		<br />
 		<div id="player-area">
@@ -36,6 +50,16 @@
 					<div class="player-area-label">Role:</div>
 					<div id="player-role" class="player-area-value player-area-col"></div>
 				</div>
+				<br />
+				<div class="player-area-row">
+					<div class="player-area-label">Round:</div>
+					<div id="roundNo" class="player-area-value player-area-col"></div>
+				</div>
+				<br />
+				<div class="player-area-row">
+					<div class="player-area-label">Round Time:</div>
+					<div id="roundTimer" class="player-area-value player-area-col"></div>
+				</div>
 			</div>
 
 			<div id="player-card-area" class="player-area-col">
@@ -44,14 +68,12 @@
 						<div class="flip-card-front">
 							<div class="playingCards">
 								<div id="card-front" class="card role">
-									F
 								</div>
 							</div>
 						</div>
 						<div class="flip-card-back">
 							<div class="playingCards">
 								<div id="card-back" class="card role">
-									B
 								</div>
 							</div>
 						</div>
@@ -59,11 +81,13 @@
 					<div id="card-bg" class="playingCards">
 						<div class="card card-effects"></div>
 					</div>
+
 				</div>
+
 			</div>
 		</div>
 	</div>
-	
+
 </body>
 
 </html>

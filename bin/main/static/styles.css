@@ -8,6 +8,11 @@ a {
 	color: inherit;
 }
 
+.error {
+
+	border: 1px solid red;
+}
+
 #lobby-listing {
 	height: 100px;
 	width: 520px;
@@ -16,8 +21,17 @@ a {
 	overflow-y: scroll;
 	border: 1px solid #c0c0c0;
 	background-color: white;
+	margin-bottom: 5px;
 
 }
+
+.player-icon{
+	width: 15px;
+	height: 14px;
+	vertical-align: top;
+}
+
+
 
 #player-area {
 
@@ -49,12 +63,12 @@ a {
 
 .player-area-label {
 	box-sizing: border-box;
-	width: 20%;
+	width: 100px;
 }
 
 .player-area-value {
 	font-weight: bold;
-
+	text-align: left;
 }
 
 .player-area-col {
@@ -63,6 +77,11 @@ a {
 	width: 50%;
 }
 
+
+#player-list{
+
+	width: 195px;
+}
 .flip-card {
 	background-color: transparent;
 	width: 220px;
@@ -82,7 +101,7 @@ a {
 }
 
 .flip-card-reveal {
-	transform: rotateY(180deg);
+	transform: rotateY(180deg) translate(-10px, 0px);
 }
 
 .flip-card-front,
@@ -169,6 +188,7 @@ a {
 	vertical-align: bottom;
 	color: white;
 	font-size: x-large;
+	font-weight: 800;
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 .role-president{
@@ -180,6 +200,11 @@ a {
 	height: 190px;
 	margin: 0 auto;
 	content: url('/images/bomb.png');
+}
+.role-gambler{
+	height: 190px;
+	margin: 0 auto;
+	content: url('/images/gambler.png');
 }
 .role-mook{
 	height: 190px;
