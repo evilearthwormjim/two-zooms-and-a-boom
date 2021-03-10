@@ -11,8 +11,7 @@ function connect() {
 			updateLobbyArea(JSON.parse(lobbyMessage.body));
 		});
 
-		stompClient.send("/topic/lobby", {}, 
-				JSON.stringify({ playerId: '1', message: 'Admin: Admin: Connected to Lobby', nameAlreadyTaken: false }));
+		stompClient.send("/app/lobby/enter", {}, JSON.stringify({ 'playerName': 'Admin' }));
 
 		document.getElementById("connect").disabled = true;
 		document.getElementById("disconnect").disabled = false;
@@ -57,8 +56,7 @@ function startGame() {
 	var rooms = [{ name: "Room A", url: roomAUrl.value }, { name: "Room B", url: roomBUrl.value }]
 
 	stompClient.send("/app/game/start", {}, JSON.stringify(rooms));
-	stompClient.send("/topic/lobby", {}, 
-		JSON.stringify({ playerId: '1', message: 'Admin: Game started...', nameAlreadyTaken: false }));
+	stompClient.send("/app/lobby/message", {}, JSON.stringify({ 'playerName': 'Admin', message: 'Game Started...' }));
 }
 
 function resetGame() {

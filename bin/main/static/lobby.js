@@ -59,28 +59,12 @@ function updateLobbyArea(lobbyMessage) {
 }
 
 
-function updateLobbyRole(revealedPlayerMessage) {
+function updateLobbyRole(revealedPlayer) {
 
-	var lobbyPlayerText = document.getElementById('txt_' + revealedPlayerMessage.revealedPlayerSessionId);
-	var lobbyPlayerIcon = document.getElementById('ico_' + revealedPlayerMessage.revealedPlayerSessionId);
+	var lobbyPlayerText = document.getElementById('txt_' + revealedPlayer.revealedPlayerSessionId);
+	var lobbyPlayerIcon = document.getElementById('ico_' + revealedPlayer.revealedPlayerSessionId);
 
-	var teamColour = (revealedPlayerMessage.team == "Blue Team") ? "blue" : "red";
+	var teamColour = revealedPlayer.revealedPlayerTeam.toLowerCase();
 	lobbyPlayerIcon.src = '/images/player_icon_' + teamColour + '.png';
-
-	lobbyRowText = "(" + revealedPlayerMessage.revealTime + ") " + revealedPlayerMessage.revealedPlayerName + ": " + revealedPlayerMessage.team + " - " + revealedPlayerMessage.role;
-
-	lobbyPlayerText.innerHTML = lobbyRowText;
-}
-
-function updateLobbyRole(revealedPlayerMessage) {
-
-	var lobbyPlayerText = document.getElementById('txt_' + revealedPlayerMessage.revealedPlayerSessionId);
-	var lobbyPlayerIcon = document.getElementById('ico_' + revealedPlayerMessage.revealedPlayerSessionId);
-
-	var teamColour = (revealedPlayerMessage.team == "Blue Team") ? "blue" : "red";
-	lobbyPlayerIcon.src = '/images/player_icon_' + teamColour + '.png';
-
-	lobbyRowText = "(" + revealedPlayerMessage.revealTime + ") " + revealedPlayerMessage.revealedPlayerName + ": " + revealedPlayerMessage.team + " - " + revealedPlayerMessage.role;
-
-	lobbyPlayerText.innerHTML = lobbyRowText;
+	lobbyPlayerText.innerHTML = revealedPlayer.revealedPlayerMessage;
 }

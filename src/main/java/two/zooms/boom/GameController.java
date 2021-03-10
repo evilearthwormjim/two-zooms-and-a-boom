@@ -28,7 +28,8 @@ public class GameController {
 	private Thread thread;
 
 	@MessageMapping("/game/start")
-	public void startGame(Room[] rooms) throws Exception {
+	@SendTo("/topic/game/start")
+	public GameStartMessage startGame(Room[] rooms) throws Exception {
 		Room roomA = new Room(rooms[0].name, rooms[0].url);
 		Room roomB = new Room(rooms[1].name, rooms[1].url);
 
@@ -36,37 +37,30 @@ public class GameController {
 
 		gameService.assignTeamRoles(roomA, roomB);
 		HashMap<String, Player> players = gameService.getPlayers();
+		//Send list of other players
+		GameStartMessage gameStartMessage = new GameStartMessage();
 		
-		// Publish roles to players
 		for (String k : players.keySet()) {
+			Player player = players.get(k);
+			LobbyMessage lobbyMessage = new LobbyMessage();
+			lobbyMessage.playerId = k;
+			lobbyMessage.playerName = player.name;
+			lobbyMessage.message = String.format("(%s: Team [Unkown] Role [Unknown]", lobbyMessage.playerName);
+			gameStartMessage.playerListings.add(lobbyMessage);
+			
+			// Publish roles to individual players
 			SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
 			headerAccessor.setLeaveMutable(true);
 			headerAccessor.setSessionId(k);
 			simpMessagingTemplate.convertAndSendToUser(k, "/queue/game/player", 
-					players.get(k),
-					headerAccessor.getMessageHeaders());
-			
-			//Send list of other players
-			List<RecipientListMessage> playerNames = new ArrayList<>();
-			players.entrySet().stream().filter(p-> !p.getKey().equals(k)).forEach(elem -> {
-				RecipientListMessage playerName = new RecipientListMessage(elem.getKey(), elem.getValue().name);
-				playerNames.add(playerName);
-			});
-			
-			simpMessagingTemplate.convertAndSendToUser(k, "/queue/game/playerNames", 
-					playerNames,
+					player,
 					headerAccessor.getMessageHeaders());
 		}
+		
+		return gameStartMessage;
 	}
 
-	private void resetTimer() {
-		//Reset the timer
-		if (thread != null) {
-			thread.interrupt();
-			simpMessagingTemplate.convertAndSend("/topic/game/roundTimer", new RoundTimerMessage());
-		}
-	}
-
+	
 	@MessageMapping("/game/reset")
 	@SendTo("/topic/game/reset")
 	public String resetGame(String resetGame) {
@@ -79,12 +73,29 @@ public class GameController {
 	
 	@MessageMapping("/game/playerReveal")
 	public void playerReveal(@Header("simpSessionId") String sessionId, RevealedPlayerMessage revealedPlayerMessage) {
+		
 		String time = new SimpleDateFormat("HH:mm").format(new Date());
-
+		
 		Player revealedPlayer = gameService.findPlayerById(sessionId);
-		revealedPlayerMessage.revealTime = time;
-		revealedPlayerMessage.revealedPlayerName = revealedPlayer.name;
 		revealedPlayerMessage.revealedPlayerSessionId = sessionId;
+		revealedPlayerMessage.revealedPlayerName = revealedPlayer.name;
+		revealedPlayerMessage.revealedPlayerRole = revealedPlayer.teamRole.role;
+		revealedPlayerMessage.revealedPlayerTeam = revealedPlayer.teamRole.team;
+		
+		if(RevealedPlayerMessage.REVEAL_TYPE_TEAM == revealedPlayerMessage.revealType) {
+			revealedPlayerMessage.revealedPlayerMessage = 
+						String.format("%s: Team [%s] Role [Unknown]", 
+								revealedPlayer.name, 
+								revealedPlayer.teamRole.team);
+		}
+		else if (RevealedPlayerMessage.REVEAL_TYPE_ROLE == revealedPlayerMessage.revealType){
+			//Role is both team and role
+			revealedPlayerMessage.revealedPlayerMessage = 
+					String.format("%s: Team [%s] Role [%s]", 
+							revealedPlayer.name, 
+							revealedPlayer.teamRole.team, 
+							revealedPlayer.teamRole.role);
+		}
 
 		SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
 		headerAccessor.setLeaveMutable(true);
@@ -104,6 +115,14 @@ public class GameController {
 		this.runCountdownTimer(roundTimerMessage);
 	}
 
+	private void resetTimer() {
+		//Reset the timer
+		if (thread != null) {
+			thread.interrupt();
+			simpMessagingTemplate.convertAndSend("/topic/game/roundTimer", new RoundTimerMessage());
+		}
+	}
+	
 	private void runCountdownTimer(RoundTimerMessage roundTimerMessage) throws InterruptedException {
 
 		Runnable runnable = () -> {

@@ -30,7 +30,7 @@ public class LobbyController {
 	
 	@MessageMapping("/lobby/enter")
 	@SendTo("/topic/lobby")
-	public LobbyMessage enterLobby(@Header("simpSessionId") String sessionId, Principal principal, LobbyMessage message) throws Exception {
+	public LobbyMessage enterLobby(@Header("simpSessionId") String sessionId, LobbyMessage message) throws Exception {
 	    String time = new SimpleDateFormat("HH:mm").format(new Date());
 	    System.out.print(message.playerName+" joining the game");
 	    Player player = gameService.findPlayerById(sessionId);
@@ -46,13 +46,27 @@ public class LobbyController {
 			message.message = "Player with that name has already joined the game";
 		}
 		else {
-			player = gameService.registerPlayer(sessionId, message.playerName);
-		    message.message = String.format("(%s) %s: Has joined the game", time, player.name);
+			if(!"Admin".equalsIgnoreCase(message.playerName)) {
+				player = gameService.registerPlayer(sessionId, message.playerName);
+			}
+		    message.message = String.format("(%s) %s: Has joined the game", time, message.playerName);
 		}
 		
 		
 	    
 		return message;
+	}
+	
+	@MessageMapping("/lobby/message")
+	@SendTo("/topic/lobby")
+	public LobbyMessage messageLobby(@Header("simpSessionId") String sessionId, LobbyMessage lobbyMessage) throws Exception {
+	
+		String time = new SimpleDateFormat("HH:mm").format(new Date());
+		String messageText = lobbyMessage.message;
+		
+		lobbyMessage.message = String.format("(%s) %s: %s", time, lobbyMessage.playerName, messageText);
+		return lobbyMessage;
+	
 	}
 	
 	@EventListener

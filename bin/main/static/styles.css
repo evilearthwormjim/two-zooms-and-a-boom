@@ -60,6 +60,9 @@ a {
 .red-team {
 	background-color: #ee1c26;
 }
+.grey-team {
+	background-color: #918585;
+}
 
 .player-area-label {
 	box-sizing: border-box;
