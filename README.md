@@ -30,6 +30,6 @@ Once all the players have joined, the administrator can click `Start Game` - thi
 
 ![Game Start](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)
 
-![Game Running](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)
+![Game Running](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/role-assigned.png)
 
-![Admin Screen](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)
+![Admin Screen](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/admin.png)
