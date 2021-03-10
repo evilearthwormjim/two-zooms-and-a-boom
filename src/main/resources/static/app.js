@@ -4,7 +4,7 @@ var mySessionId = "";
 function connect() {
 
 	return new Promise((resolve, reject) => {
-		var socket = new SockJS('/2ZaaB');
+		var socket = new SockJS('/two-zooms-boom/game');
 
 		if (stompClient == null || !stompClient.connected) {
 			stompClient = Stomp.over(socket);

@@ -2,7 +2,7 @@ var stompClient = null;
 
 
 function connect() {
-	var socket = new SockJS('/2ZaaB');
+	var socket = new SockJS('/two-zooms-boom/game');
 	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function (frame) {
 		console.log('Session Id: ' + socket._transport.url);

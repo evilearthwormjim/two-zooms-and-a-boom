@@ -42,7 +42,7 @@ function updateLobbyArea(lobbyMessage) {
 	var lobbyText = document.createElement('span');
 
 	playerIcon.id = 'ico_' + lobbyMessage.playerId;
-	playerIcon.src = '/images/player_icon.png';
+	playerIcon.src = 'images/player_icon.png';
 	playerIcon.classList.add('player-icon');
 
 	lobbyText.id = 'txt_' + lobbyMessage.playerId;
@@ -65,6 +65,6 @@ function updateLobbyRole(revealedPlayer) {
 	var lobbyPlayerIcon = document.getElementById('ico_' + revealedPlayer.revealedPlayerSessionId);
 
 	var teamColour = revealedPlayer.revealedPlayerTeam.toLowerCase();
-	lobbyPlayerIcon.src = '/images/player_icon_' + teamColour + '.png';
+	lobbyPlayerIcon.src = 'images/player_icon_' + teamColour + '.png';
 	lobbyPlayerText.innerHTML = revealedPlayer.revealedPlayerMessage;
 }

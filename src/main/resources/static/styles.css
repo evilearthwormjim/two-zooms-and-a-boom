@@ -197,20 +197,20 @@ a {
 .role-president{
 	height: 190px;
 	margin: 0 auto;
-	content: url('/images/president.png');
+	content: url('images/president.png');
 }
 .role-bomb{
 	height: 190px;
 	margin: 0 auto;
-	content: url('/images/bomb.png');
+	content: url('images/bomb.png');
 }
 .role-gambler{
 	height: 190px;
 	margin: 0 auto;
-	content: url('/images/gambler.png');
+	content: url('images/gambler.png');
 }
 .role-mook{
 	height: 190px;
 	margin: 0 auto;
-	content: url('/images/mook.png');
+	content: url('images/mook.png');
 }
