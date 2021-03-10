@@ -11,8 +11,15 @@ function connect() {
 			updateLobbyArea(JSON.parse(lobbyMessage.body));
 		});
 
-		updateLobbyArea({ playerId: '1', message: 'Admin: Connected to lobby', sessionId: '' })
+		stompClient.send("/topic/lobby", {}, 
+				JSON.stringify({ playerId: '1', message: 'Admin: Admin: Connected to Lobby', nameAlreadyTaken: false }));
+
 		document.getElementById("connect").disabled = true;
+		document.getElementById("disconnect").disabled = false;
+		document.querySelectorAll('.game-button').forEach(function (element) {
+			element.disabled = false;
+		});
+
 	}, function (err) {
 		console.log(err);
 	});
@@ -24,6 +31,10 @@ function disconnect() {
 	}
 	console.log("Disconnected");
 	document.getElementById("connect").disabled = false;
+	document.getElementById("disconnect").disabled = true;
+	document.querySelectorAll('.game-button').forEach(function (element) {
+		element.disabled = true;
+	});
 }
 
 function startGame() {
@@ -35,9 +46,9 @@ function startGame() {
 
 	if (roomAUrl.value == "" || roomBUrl.value == "") {
 
-		if (roomAUrl.value == "" )
+		if (roomAUrl.value == "")
 			roomAUrl.classList.add('error');
-		if (roomBUrl.value == "" )
+		if (roomBUrl.value == "")
 			roomBUrl.classList.add('error');
 
 		return false;
@@ -45,8 +56,14 @@ function startGame() {
 
 	var rooms = [{ name: "Room A", url: roomAUrl.value }, { name: "Room B", url: roomBUrl.value }]
 
-	stompClient.send("/app/game/startGame", {}, JSON.stringify(rooms));
+	stompClient.send("/app/game/start", {}, JSON.stringify(rooms));
+	stompClient.send("/topic/lobby", {}, 
+		JSON.stringify({ playerId: '1', message: 'Admin: Game started...', nameAlreadyTaken: false }));
+}
 
+function resetGame() {
+
+	stompClient.send("/app/game/reset", {}, "reset");
 }
 
 function startRound(roundNo) {

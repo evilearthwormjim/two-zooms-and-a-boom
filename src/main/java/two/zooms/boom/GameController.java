@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -26,16 +27,12 @@ public class GameController {
 
 	private Thread thread;
 
-	@MessageMapping("/game/startGame")
+	@MessageMapping("/game/start")
 	public void startGame(Room[] rooms) throws Exception {
 		Room roomA = new Room(rooms[0].name, rooms[0].url);
 		Room roomB = new Room(rooms[1].name, rooms[1].url);
 
-		//Reset the timer
-		if (thread != null) {
-			thread.interrupt();
-			simpMessagingTemplate.convertAndSend("/topic/game/roundTimer", new RoundTimerMessage());
-		}
+		resetTimer();
 
 		gameService.assignTeamRoles(roomA, roomB);
 		HashMap<String, Player> players = gameService.getPlayers();
@@ -62,6 +59,24 @@ public class GameController {
 		}
 	}
 
+	private void resetTimer() {
+		//Reset the timer
+		if (thread != null) {
+			thread.interrupt();
+			simpMessagingTemplate.convertAndSend("/topic/game/roundTimer", new RoundTimerMessage());
+		}
+	}
+
+	@MessageMapping("/game/reset")
+	@SendTo("/topic/game/reset")
+	public String resetGame(String resetGame) {
+		
+		gameService.setPlayers(new HashMap<>());
+		resetTimer();
+		
+		return resetGame;
+	}
+	
 	@MessageMapping("/game/playerReveal")
 	public void playerReveal(@Header("simpSessionId") String sessionId, RevealedPlayerMessage revealedPlayerMessage) {
 		String time = new SimpleDateFormat("HH:mm").format(new Date());

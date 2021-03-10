@@ -17,6 +17,9 @@ function connect() {
 				stompClient.subscribe('/topic/game/roundTimer', function (roundTimerMessage) {
 					updateRoundTimerArea(JSON.parse(roundTimerMessage.body));
 				});
+				stompClient.subscribe('/topic/game/reset', function (resetMessage) {
+					resetGame();
+				});
 				stompClient.subscribe('/user/queue/game/player', function (playerMessage) {
 					updatePlayerArea(JSON.parse(playerMessage.body));
 				});
@@ -41,7 +44,7 @@ function connect() {
 }
 
 function disconnect() {
-	
+
 	document.getElementById('join-lobby').disabled = false;
 	document.getElementById('disconnect').disabled = true;
 
@@ -51,21 +54,26 @@ function disconnect() {
 	console.log("Disconnected");
 }
 
-function updateRecipientList(recipientList){
+function resetGame() {
+
+	location.reload();
+};
+
+function updateRecipientList(recipientList) {
 	var revealTeam = document.getElementById('reveal-team');
 	var revealRole = document.getElementById('reveal-role');
 	var playerList = document.getElementById('player-list');
 	var defaultOption = document.createElement('option');
-	
+
 	revealTeam.disabled = false;
 	revealRole.disabled = false;
 	removeAllChildNodes(playerList);
-	
+
 	defaultOption.value = '-';
 	defaultOption.innerHTML = 'Select Recipient';
 	playerList.appendChild(defaultOption);
 
-	recipientList.forEach(function(recipient) {
+	recipientList.forEach(function (recipient) {
 		var option = document.createElement('option');
 		option.value = recipient.playerId;
 		option.text = recipient.playerName;
@@ -87,7 +95,7 @@ function updatePlayerArea(player) {
 	var teamColours = {
 		"Blue Team": "#3a56a5",
 		"Red Team": "#ee1c26",
-		"Grey Team":"#918585"
+		"Grey Team": "#918585"
 	}
 	var flipClass = "flip-card-reveal";
 
