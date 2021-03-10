@@ -28,4 +28,8 @@ Download the repo, and run:
 
 Once all the players have joined, the administrator can click `Start Game` - this will assign teams and roles
 
+![Game Start](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)
 
+![Game Running](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)
+
+![Admin Screen](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)
