@@ -33,8 +33,6 @@ Once ready, the admin can start the round 1 timer, and continue until round 3 is
 During the game, players may secretly reveal either their team, or their role. Revealing a role will include team too.
 
 ### Player Screen
-![Game Start](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)
-
 ![Game Running](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/role-assigned.png)
 
 ### Admin Screen
