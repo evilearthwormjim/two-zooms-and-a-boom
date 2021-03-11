@@ -1,5 +1,7 @@
 var stompClient = null;
 var mySessionId = "";
+var myTeam = "";
+var myRole = "";
 
 function connect() {
 
@@ -12,7 +14,10 @@ function connect() {
 				console.log('Session Id: ' + socket._transport.url);
 				console.log('Connected: ' + frame);
 				stompClient.subscribe('/topic/lobby', function (lobbyMessage) {
-					updateLobbyArea(JSON.parse(lobbyMessage.body));
+					updateLobbyListing(JSON.parse(lobbyMessage.body));
+				});
+				stompClient.subscribe('/user/queue/lobby', function (lobbyMessage) {
+					updateLobbyListing(JSON.parse(lobbyMessage.body));
 				});
 				stompClient.subscribe('/topic/game/roundTimer', function (roundTimerMessage) {
 					updateRoundTimerArea(JSON.parse(roundTimerMessage.body));
@@ -23,14 +28,11 @@ function connect() {
 				stompClient.subscribe('/user/queue/game/player', function (playerMessage) {
 					updatePlayerArea(JSON.parse(playerMessage.body));
 				});
-				stompClient.subscribe('/user/queue/game/playerReveal', function (playerRevealedMessage) {
-					updateLobbyRole(JSON.parse(playerRevealedMessage.body));
+				stompClient.subscribe('/user/queue/game/revealedPlayer', function (revealedPlayerMessage) {
+					revealPlayer(JSON.parse(revealedPlayerMessage.body));
 				});
 				stompClient.subscribe('/topic/game/start', function (gameStartMessage) {
-					var playerListings = JSON.parse(gameStartMessage.body).playerListings;
-					updatePlayerList(playerListings);
-					
-					
+					readyPlayerLists(JSON.parse(gameStartMessage.body));
 				});
 
 				resolve('Connected!');
@@ -62,22 +64,25 @@ function resetGame() {
 	location.reload();
 };
 
-function updatePlayerList(playerListings) {
-	var playerList = document.getElementById('player-list');
+function readyPlayerLists(gameStartMessage) {
+	var playerListings = gameStartMessage.playerListings;
+	var playerListing = document.getElementById("player-listing");
+	var recipientList = document.getElementById('recipient-list');
 	var revealTeam = document.getElementById('reveal-team');
 	var revealRole = document.getElementById('reveal-role');
 	var defaultOption = document.createElement('option');
-	var lobbyListing = document.getElementById('lobby-listing');
 
-	removeAllChildNodes(playerList);
-	removeAllChildNodes(lobbyListing);
+	removeAllChildNodes(recipientList);
+	removeAllChildNodes(playerListing);
 
 	revealTeam.disabled = false;
 	revealRole.disabled = false;
 
 	defaultOption.value = '-';
 	defaultOption.innerHTML = 'Select Recipient';
-	playerList.appendChild(defaultOption);
+	recipientList.appendChild(defaultOption);
+
+	var currentPlayer;
 
 	playerListings.forEach(function (player) {
 
@@ -87,22 +92,50 @@ function updatePlayerList(playerListings) {
 
 		if(player.playerId!=mySessionId){
 			//Set player listings to only other current players
-			updateLobbyArea(player);
-			playerList.appendChild(option);
+			updatePlayerStatuses(player);
+			recipientList.appendChild(option);
 		}
-		
+		else {
+
+			currentPlayer = player;
+		}
 	});
 
-	playerList.value = '-';
+	recipientList.value = '-';
+
+	playerListing.appendChild(document.createElement('hr'));
+	currentPlayer.message = "Me: Team ("+myTeam+") Role ("+myRole+")";
+	updatePlayerStatuses(currentPlayer);
+
+}
+
+function updatePlayerStatuses(playerListingMessage) {
+	var playerListing = document.getElementById("player-listing");
+	var div = document.createElement('div');
+	var playerIcon = document.createElement('img');
+	var listingText = document.createElement('span');
+	
+	playerIcon.id = 'ico_' + playerListingMessage.playerId;
+	playerIcon.src = 'images/player_icon.png';
+	playerIcon.classList.add('player-icon');
+
+	listingText.id = 'txt_' + playerListingMessage.playerId;
+	listingText.appendChild(document.createTextNode(playerListingMessage.message));
+
+	div.id = playerListingMessage.playerId;
+	div.style.wordWrap = 'break-word';
+	div.appendChild(playerIcon);
+	div.appendChild(listingText);
+
+	playerListing.appendChild(div);
 
 }
 
 function updatePlayerArea(player) {
-	mySessionId = player.sessionId;
+	
 	var playerRoom = document.getElementById('player-room-link');
 	var playerTeam = document.getElementById('player-team');
 	var playerRole = document.getElementById('player-role');
-
 	var playerRows = document.querySelectorAll('.player-area-row');
 	var cardFlipper = document.getElementById('player-card-flipper');
 	var cardsElements = document.querySelectorAll('div.card');
@@ -113,10 +146,14 @@ function updatePlayerArea(player) {
 	}
 	var flipClass = "flip-card-reveal";
 
+	mySessionId = player.sessionId;
+	myTeam = player.teamRole.team;
+	myRole = player.teamRole.role;
+
 	playerRoom.innerHTML = player.room.name + " (click to join)";
 	playerRoom.href = player.room.url;
-	playerTeam.innerHTML = player.teamRole.team;
-	playerRole.innerHTML = player.teamRole.role;
+	playerTeam.innerHTML = myTeam;
+	playerRole.innerHTML = myRole;
 
 	playerRows.forEach(row => {
 		row.style.backgroundColor = teamColours[player.teamRole.team];
@@ -134,6 +171,7 @@ function updatePlayerArea(player) {
 	removeAllChildNodes(nextCardElem);
 
 	nextCardImg.classList.add('role-' + player.teamRole.role.toLowerCase());
+	nextCardImg.title = player.teamRole.roleDescription;
 	nextCardText.classList.add('role-label');
 	nextCardText.appendChild(document.createTextNode(player.teamRole.role));
 	nextCardElem.appendChild(nextCardImg);
@@ -153,12 +191,21 @@ function updateRoundTimerArea(roundTimerMessage) {
 
 function revealMyRole(revealType) {
 
-	var playerList = document.getElementById('player-list');
+	var playerList = document.getElementById('recipient-list');
 	recipientSessionId = playerList.value;
 
-	stompClient.send("/app/game/playerReveal", {}, JSON.stringify({ 'recipientSessionId': recipientSessionId, 'revealType': revealType}));
+	stompClient.send("/app/game/revealPlayer", {}, JSON.stringify({ 'recipientSessionId': recipientSessionId, 'revealType': revealType}));
 }
 
+function revealPlayer(revealedPlayer) {
+
+	var playerListingIcon = document.getElementById('ico_' + revealedPlayer.revealedPlayerSessionId);
+	var playerListingText = document.getElementById('txt_' + revealedPlayer.revealedPlayerSessionId);
+
+	var teamColour = revealedPlayer.revealedPlayerTeam.toLowerCase();
+	playerListingIcon.src = 'images/player_icon_' + teamColour + '.png';
+	playerListingText.innerHTML = revealedPlayer.revealedPlayerMessage;
+}
 
 function removeAllChildNodes(parent) {
 	while (parent.firstChild) {

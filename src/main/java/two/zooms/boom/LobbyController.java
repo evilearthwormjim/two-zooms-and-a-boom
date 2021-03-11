@@ -1,20 +1,15 @@
 package two.zooms.boom;
 
-import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Controller
@@ -29,8 +24,7 @@ public class LobbyController {
 	private static String WAITING_MSG = "Waiting for game to start...";
 	
 	@MessageMapping("/lobby/enter")
-	@SendTo("/topic/lobby")
-	public LobbyMessage enterLobby(@Header("simpSessionId") String sessionId, LobbyMessage message) throws Exception {
+	public void enterLobby(@Header("simpSessionId") String sessionId, LobbyMessage message) throws Exception {
 	    String time = new SimpleDateFormat("HH:mm").format(new Date());
 	    System.out.print(message.playerName+" joining the game");
 	    Player player = gameService.findPlayerById(sessionId);
@@ -42,19 +36,18 @@ public class LobbyController {
 	    message.playerId = sessionId;
 	    
 		if(playerNameTaken) {
-			message.nameAlreadyTaken = playerNameTaken && !player.sessionId.equals(sessionId);
+			message.nameAlreadyTaken = playerNameTaken && (player == null || !player.sessionId.equals(sessionId));
 			message.message = "Player with that name has already joined the game";
+			simpMessagingTemplate.convertAndSendToUser(sessionId, "/queue/lobby", message);
 		}
 		else {
 			if(!"Admin".equalsIgnoreCase(message.playerName)) {
 				player = gameService.registerPlayer(sessionId, message.playerName);
 			}
 		    message.message = String.format("(%s) %s: Has joined the game", time, message.playerName);
+		    simpMessagingTemplate.convertAndSend("/topic/lobby", message);
 		}
-		
-		
 	    
-		return message;
 	}
 	
 	@MessageMapping("/lobby/message")

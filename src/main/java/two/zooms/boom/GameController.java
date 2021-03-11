@@ -1,10 +1,8 @@
 package two.zooms.boom;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +34,7 @@ public class GameController {
 		Room roomB = new Room(rooms[1].name, rooms[1].url);
 
 		resetTimer();
-
+		
 		gameService.assignTeamRoles(roomA, roomB);
 		HashMap<String, Player> players = gameService.getPlayers();
 		//Send list of other players
@@ -59,6 +57,21 @@ public class GameController {
 					headerAccessor.getMessageHeaders());
 		}
 		
+		String time = new SimpleDateFormat("HH:mm").format(new Date());
+		LobbyMessage lobbyMessage = new LobbyMessage();
+		
+		lobbyMessage.message = String.format("(%s) Admin: <a href=\"%s\" target=\"_blank\"> Room A Link</a> created", 
+				time,
+				rooms[0].url);
+		
+		simpMessagingTemplate.convertAndSend("/topic/lobby", lobbyMessage);
+		
+		lobbyMessage.message = String.format("(%s) Admin: <a href=\"%s\" target=\\\"_blank\\\"> Room B Link</a> created", 
+				time,
+				rooms[1].url);
+		
+		simpMessagingTemplate.convertAndSend("/topic/lobby", lobbyMessage);
+		
 		return gameStartMessage;
 	}
 
@@ -73,10 +86,8 @@ public class GameController {
 		return resetGame;
 	}
 	
-	@MessageMapping("/game/playerReveal")
-	public void playerReveal(@Header("simpSessionId") String sessionId, RevealedPlayerMessage revealedPlayerMessage) {
-		
-		String time = new SimpleDateFormat("HH:mm").format(new Date());
+	@MessageMapping("/game/revealPlayer")
+	public void revealPlayer(@Header("simpSessionId") String sessionId, RevealedPlayerMessage revealedPlayerMessage) {
 		
 		Player revealedPlayer = gameService.findPlayerById(sessionId);
 		revealedPlayerMessage.revealedPlayerSessionId = sessionId;
@@ -103,13 +114,18 @@ public class GameController {
 		headerAccessor.setLeaveMutable(true);
 		headerAccessor.setSessionId(revealedPlayerMessage.recipientSessionId);
 
-		simpMessagingTemplate.convertAndSendToUser(revealedPlayerMessage.recipientSessionId, "/queue/game/playerReveal",
+		simpMessagingTemplate.convertAndSendToUser(revealedPlayerMessage.recipientSessionId, "/queue/game/revealedPlayer",
 				revealedPlayerMessage, headerAccessor.getMessageHeaders());
 	}
 
+	
 	@MessageMapping("/game/startRound")
 	public void startRound(int roundNo) throws Exception {
 
+		LobbyMessage lobbyMessage = new LobbyMessage();
+		String time = new SimpleDateFormat("HH:mm").format(new Date());
+		lobbyMessage.message = String.format("(%s) Admin: Round %s started", time, roundNo);
+		simpMessagingTemplate.convertAndSend("/topic/lobby", lobbyMessage);
 		RoundTimerMessage roundTimerMessage = new RoundTimerMessage(roundNo);
 		if (thread != null) {
 			thread.interrupt();

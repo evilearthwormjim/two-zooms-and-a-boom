@@ -18,11 +18,18 @@
 				<button id="disconnect" onclick="disconnect();" disabled="true">Disconnect</button>
 			</div>
 			<br />
-			Lobby
-			<div id="lobby-listing"></div>
+			<div class="flex-container">
+				<div>Lobby</div>
+				<div>Players</div>
+			</div>
+			<div class="flex-container">
+				<div id="lobby-listing" class="lobby-box"></div>
+				<div id="player-listing" class="lobby-box"></div>
+			</div>
+			
 			<div  style="margin-top: 5px;">
 				<div id="recipient-area">
-					<select name="player" id="player-list">
+					<select name="player" id="recipient-list">
 						<option value="-">Select Recipient</option>
 					</select>
 					<button id="reveal-team" onclick="revealMyRole(1);" disabled="true">Reveal Team</button>
@@ -37,7 +44,7 @@
 				<div class="player-area-row">
 					<div class="player-area-label">Room:</div>
 					<div id="player-room" class="player-area-value player-area-col">
-						<a id="player-room-link" href="" target="blank"></a>
+						<a id="player-room-link" href="" target="_blank"></a>
 					</div>
 				</div>
 				<br />

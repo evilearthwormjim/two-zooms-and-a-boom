@@ -26,7 +26,7 @@ Download the repo, and run:
 - Players go to `http://localhost:8080/two-zooms-boom`
 - Whoever is running the game can go to `http://localhost:8080/two-zooms-boom/admin.html`
 
-Once all the players have joined, the administrator can click `Start Game` - this will assign teams and roles
+Once all the players have joined, the administrator can click `Start Game` - this will assign teams and roles that cna
 
 ### Player Screen
 ![Game Start](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)

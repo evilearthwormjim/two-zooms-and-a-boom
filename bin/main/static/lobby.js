@@ -21,36 +21,27 @@ function joinLobby() {
 	}
 }
 
-function updateLobbyArea(lobbyMessage) {
+function updateLobbyListing(lobbyListingMessage) {
 	var playerName = document.getElementById('player-name');
 	var lobbyListing = document.getElementById('lobby-listing');
-	var lobbyRow = document.getElementById(lobbyMessage.playerId);
 
 	if (playerName) {
 		playerName.classList.remove('error');
-		playerName.placeHolder = 'Choose a nickname';
 
-		if (lobbyMessage.nameAlreadyTaken) {
-
+		if (lobbyListingMessage.nameAlreadyTaken) {
+			document.getElementById('join-lobby').disabled = false;
+			document.getElementById('disconnect').disabled = true;
 			playerName.classList.add('error');
-			playerName.placeHolder = 'Name already taken';
+			playerName.value = 'Name already taken';
+			disconnect();
 			return false;
 		}
 	}
 	var div = document.createElement('div');
-	var playerIcon = document.createElement('img');
 	var lobbyText = document.createElement('span');
 
-	playerIcon.id = 'ico_' + lobbyMessage.playerId;
-	playerIcon.src = 'images/player_icon.png';
-	playerIcon.classList.add('player-icon');
-
-	lobbyText.id = 'txt_' + lobbyMessage.playerId;
-	lobbyText.appendChild(document.createTextNode(lobbyMessage.message));
-
-	div.id = lobbyMessage.playerId;
+	lobbyText.innerHTML = lobbyListingMessage.message;
 	div.style.wordWrap = 'break-word';
-	div.appendChild(playerIcon);
 	div.appendChild(lobbyText);
 
 	lobbyListing.appendChild(div);
@@ -59,12 +50,3 @@ function updateLobbyArea(lobbyMessage) {
 }
 
 
-function updateLobbyRole(revealedPlayer) {
-
-	var lobbyPlayerText = document.getElementById('txt_' + revealedPlayer.revealedPlayerSessionId);
-	var lobbyPlayerIcon = document.getElementById('ico_' + revealedPlayer.revealedPlayerSessionId);
-
-	var teamColour = revealedPlayer.revealedPlayerTeam.toLowerCase();
-	lobbyPlayerIcon.src = 'images/player_icon_' + teamColour + '.png';
-	lobbyPlayerText.innerHTML = revealedPlayer.revealedPlayerMessage;
-}
