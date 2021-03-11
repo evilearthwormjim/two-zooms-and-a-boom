@@ -20,6 +20,9 @@ Download the repo, and run:
 ./gradelew bootRun
 ```
 
+If you're running locally remember to allow inbound requests for port `8080` on your firewall.
+
+If you want to expose the app with a convenient public url, try a tunnel app like [ngrok](https://ngrok.com/)
 
 ## Running the game
 
