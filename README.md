@@ -23,10 +23,14 @@ Download the repo, and run:
 
 ## Running the game
 
-- Players go to `http://localhost:8080/two-zooms-boom`
-- Whoever is running the game can go to `http://localhost:8080/two-zooms-boom/admin.html`
+- Everyone participating should go to the player screen: `http://localhost:8080/two-zooms-boom`
+- Whoever is running the game also should bring up the admin screen: `http://localhost:8080/two-zooms-boom/admin.html`
 
-Once all the players have joined, the administrator can click `Start Game` - this will assign teams and roles that cna
+Once all the players have joined, the admin can click `Assign Roles` on the admin screen - this will reveal to each player their team, role, and which room link they should go to.
+
+Once ready, the admin can start the round 1 timer, and continue until round 3 is complete.
+
+During the game, players may secretly reveal either their team, or their role. Revealing a role will include team too.
 
 ### Player Screen
 ![Game Start](https://github.com/evilearthwormjim/two-zooms-and-a-boom/blob/master/README/game-start.png)
