@@ -159,6 +159,14 @@ public class GameController {
 
 					simpMessagingTemplate.convertAndSend("/topic/game/roundTimer", roundTimerMessage);
 				}
+				
+				String time = new SimpleDateFormat("HH:mm").format(new Date());
+				LobbyMessage roundOverMessage = new LobbyMessage();
+				roundOverMessage.message = 
+						String.format("(%s) Admin: Round %s has ended. Swap Hostages!", time, roundTimerMessage.roundNo);
+				
+				simpMessagingTemplate.convertAndSend("/topic/lobby", roundOverMessage);
+				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

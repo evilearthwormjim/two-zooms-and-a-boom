@@ -27,15 +27,19 @@
 				<div id="player-listing" class="lobby-box"></div>
 			</div>
 			
-			<div  style="margin-top: 5px;">
-				<div id="recipient-area">
+			<div id="interaction-area" class="flex-container">
+				<div>
+					<input type="text" id="lobby-message" class="lobby-message-box" placeholder="Send message to lobby" />
+					<button id="send-message" onclick="sendLobbyMessage();">Send</button>
+				</div>
+				<div>
+					Reveal To:
 					<select name="player" id="recipient-list">
 						<option value="-">Select Recipient</option>
 					</select>
 					<button id="reveal-team" onclick="revealMyRole(1);" disabled="true">Reveal Team</button>
 					<button id="reveal-role" onclick="revealMyRole(2);" disabled="true">Reveal Role</button>
 				</div>
-
 			</div>
 		</div>
 		<br />

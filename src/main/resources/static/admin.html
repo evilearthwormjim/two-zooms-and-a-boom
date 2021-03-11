@@ -14,31 +14,52 @@
 
         <div id="lobby-area">
             Lobby
+            
             <div id="lobby-listing" class="lobby-box"></div>
             <div>
                 <button id="connect" onclick="connect();">Connect</button>
                 <button id="disconnect" onclick="disconnect();" disabled="true">Disconnect</button>
+                <input type="text" id="lobby-message" class="lobby-message-box" placeholder="Send message to lobby" />
+                <button id="send-message" onclick="sendLobbyMessage('Admin');">Send</button>
             </div>
         </div>
         <br />
         <div id="admin-area">
             <div class="admin-area-row">
-                <div class="admin-area-label">Room A Zoom link: <input type="text" id="room-a-url"
-                        placeholder="Add meeting link here" /></div>
-                <div class="admin-area-label">Room B Zoom link: <input type="text" id="room-b-url"
-                        placeholder="Add meeting link here" /></div>
-            </div>
-            <br />
-            <div>
-                <button id="start-game" class="game-button" onclick="startGame();" disabled="true">Assign Roles</button>
-                <button id="round-one" class="game-button" onclick="startRound(1);" disabled="true">Start Round 1</button>
-                <button id="round-two" class="game-button" onclick="startRound(2);" disabled="true">Start Round 2</button>
-                <button id="round-three" class="game-button" onclick="startRound(3);" disabled="true">Start Round 3</button>
-                <button id="reset-game" class="game-button" onclick="resetGame();" disabled="true">Reset Game</button>
+                <div class="admin-area-link">
+                    <div class="admin-area-label">Lobby Zoom link:</div>
+                    <div>
+                        <input type="text" id="lobby-url" placeholder="Add meeting link here" />
+                    </div>
+                </div>
+                <div class="admin-area-link">
+                    <div class="admin-area-label">Room A Zoom link:</div>
+                    <div>
+                        <input type="text" id="room-a-url" placeholder="Add meeting link here" />
+                    </div>
+                </div>
+                <div class="admin-area-link">
+                    <div class="admin-area-label">Room B Zoom link: </div>
+                    <div>
+                        <input type="text" id="room-b-url" placeholder="Add meeting link here" />
+                    </div>
+                </div>
+                <br />
+                <div>
+                    <button id="start-game" class="game-button" onclick="startGame();" disabled="true">Assign
+                        Roles</button>
+                    <button id="round-one" class="game-button" onclick="startRound(1);" disabled="true">Start Round
+                        1</button>
+                    <button id="round-two" class="game-button" onclick="startRound(2);" disabled="true">Start Round
+                        2</button>
+                    <button id="round-three" class="game-button" onclick="startRound(3);" disabled="true">Start Round
+                        3</button>
+                    <button id="reset-game" class="game-button" onclick="resetGame();" disabled="true">Reset
+                        Game</button>
+                </div>
             </div>
         </div>
     </div>
-
 </body>
 
 </html>

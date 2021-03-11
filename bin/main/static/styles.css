@@ -16,7 +16,7 @@ a {
 .flex-container{
 	display: flex;
 	flex-wrap: nowrap;
-	width: 530px;  
+	width: 760px;  
 }
 
 .flex-container div {
@@ -73,6 +73,39 @@ a {
 }
 .grey-team {
 	background-color: #918585;
+}
+
+
+.admin-area-link {
+
+	display:flex;
+	font-size: smaller;
+	margin-bottom: 2px;
+
+}
+
+#interaction-area{
+	font-size: small;
+	
+}
+
+#interaction-area button{
+	margin-top: 5px;
+}
+
+.lobby-message-box{
+
+	width: 240px;
+}
+
+.admin-area-link  .admin-area-label{
+
+	width: 150px;
+	vertical-align: bottom;
+}
+
+.admin-area-link input{
+	width: 300px;
 }
 
 .player-area-label {

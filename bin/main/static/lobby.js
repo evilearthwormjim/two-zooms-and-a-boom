@@ -50,3 +50,12 @@ function updateLobbyListing(lobbyListingMessage) {
 }
 
 
+function sendLobbyMessage(playerName){
+
+	var message = document.getElementById("lobby-message").value;
+
+	if(message!=""){
+
+		stompClient.send("/app/lobby/message", {}, JSON.stringify({ 'playerName': playerName, message: message }));
+	}
+}

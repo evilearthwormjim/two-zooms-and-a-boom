@@ -56,8 +56,10 @@ public class LobbyController {
 	
 		String time = new SimpleDateFormat("HH:mm").format(new Date());
 		String messageText = lobbyMessage.message;
+		Player player = gameService.findPlayerById(sessionId);
+		String name = (player==null)? lobbyMessage.playerName:player.name;
 		
-		lobbyMessage.message = String.format("(%s) %s: %s", time, lobbyMessage.playerName, messageText);
+		lobbyMessage.message = String.format("(%s) %s: %s", time, name, messageText);
 		return lobbyMessage;
 	
 	}
