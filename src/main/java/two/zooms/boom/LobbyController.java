@@ -12,6 +12,9 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import two.zooms.boom.game.GameService;
+import two.zooms.boom.game.Player;
+
 @Controller
 public class LobbyController {
 

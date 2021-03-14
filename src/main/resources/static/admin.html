@@ -14,7 +14,7 @@
 
         <div id="lobby-area">
             Lobby
-            
+
             <div id="lobby-listing" class="lobby-box"></div>
             <div>
                 <button id="connect" onclick="connect();">Connect</button>
@@ -46,16 +46,40 @@
                 </div>
                 <br />
                 <div>
-                    <button id="start-game" class="game-button" onclick="startGame();" disabled="true">Assign
-                        Roles</button>
-                    <button id="round-one" class="game-button" onclick="startRound(1);" disabled="true">Start Round
-                        1</button>
-                    <button id="round-two" class="game-button" onclick="startRound(2);" disabled="true">Start Round
-                        2</button>
-                    <button id="round-three" class="game-button" onclick="startRound(3);" disabled="true">Start Round
-                        3</button>
-                    <button id="reset-game" class="game-button" onclick="resetGame();" disabled="true">Reset
-                        Game</button>
+                    <div class="flex-container" style="width:300px">
+                        <div class="admin-area-label">Select Optional Roles: </div>
+                        <div id="blue-role-count">b[0]</div>
+                        <div id="red-role-count">r[0]</div>
+                        <div id="grey-role-count">g[0]</div>
+                    </div>
+                    <div id="role-listing-area">
+                        <select name="gameRoles" id="game-roles" onclick="selectRoles()" multiple disabled="true">
+                            <option value="AgentBlue" class="blue-team">Agent Blue</option>
+                            <option value="AgentRed" class="red-team">Agent Red</option>
+                            <option value="Agoraphobe" class="grey-team">Agoraphobe</option>
+                            <option value="BouncerBlue" class="blue-team">Bouncer Blue</option>
+                            <option value="BouncerRed" class="red-team">Bouncer Red</option>
+                        </select>
+                    </div>
+                    <button id="start-game" class="game-button" onclick="startGame();" disabled="true">
+                        Assign Roles
+                    </button>
+                    <button id="reset-game" class="game-button" onclick="resetGame();" disabled="true">
+                        Reset Players
+                    </button>
+                </div>
+                <div style="margin-top:10px;">
+
+                    <button id="round-one" class="game-button" onclick="startRound(1);" disabled="true">
+                        Start Round 1
+                    </button>
+                    <button id="round-two" class="game-button" onclick="startRound(2);" disabled="true">
+                        Start Round 2
+                    </button>
+                    <button id="round-three" class="game-button" onclick="startRound(3);" disabled="true">
+                        Start Round 3
+                    </button>
+
                 </div>
             </div>
         </div>

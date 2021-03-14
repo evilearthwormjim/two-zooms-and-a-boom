@@ -1,4 +1,4 @@
-package two.zooms.boom;
+package two.zooms.boom.roles;
 
 import lombok.Getter;
 import lombok.Setter;

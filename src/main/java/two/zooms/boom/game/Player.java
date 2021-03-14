@@ -1,9 +1,11 @@
-package two.zooms.boom;
+package two.zooms.boom.game;
 
 import java.util.UUID;
 
 import lombok.Getter;
 import lombok.Setter;
+import two.zooms.boom.Room;
+import two.zooms.boom.roles.TeamRole;
 
 public class Player {
 

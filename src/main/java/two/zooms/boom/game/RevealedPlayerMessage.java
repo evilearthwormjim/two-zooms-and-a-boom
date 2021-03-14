@@ -1,12 +1,13 @@
-package two.zooms.boom;
+package two.zooms.boom.game;
 
 import lombok.Getter;
 import lombok.Setter;
+import two.zooms.boom.roles.TeamRole;
 
 public class RevealedPlayerMessage extends TeamRole {
 	
-	final static int REVEAL_TYPE_TEAM = 1;
-	final static int REVEAL_TYPE_ROLE = 2;
+	public final static int REVEAL_TYPE_TEAM = 1;
+	public final static int REVEAL_TYPE_ROLE = 2;
 	
 	@Getter @Setter
 	public String recipientSessionId;

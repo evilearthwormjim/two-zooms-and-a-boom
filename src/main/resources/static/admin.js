@@ -18,6 +18,7 @@ function connect() {
 		document.querySelectorAll('.game-button').forEach(function (element) {
 			element.disabled = false;
 		});
+		document.getElementById("game-roles").disabled = false;
 
 	}, function (err) {
 		console.log(err);
@@ -34,17 +35,25 @@ function disconnect() {
 	document.querySelectorAll('.game-button').forEach(function (element) {
 		element.disabled = true;
 	});
+	document.getElementById("game-roles").disabled = true;
 }
 
 function startGame() {
 
+	var lobbyUrl = document.getElementById('lobby-url');
 	var roomAUrl = document.getElementById('room-a-url');
 	var roomBUrl = document.getElementById('room-b-url');
+
+	lobbyUrl.classList.remove('error');
 	roomAUrl.classList.remove('error');
 	roomBUrl.classList.remove('error');
 
-	if (roomAUrl.value == "" || roomBUrl.value == "") {
+	if (lobbyUrl.value == "" || roomAUrl.value == "" || roomBUrl.value == "") {
 
+		if (lobbyUrl.value == "")
+			lobbyUrl.classList.add('error');
+		if (roomBUrl.value == "")
+			roomBUrl.classList.add('error');
 		if (roomAUrl.value == "")
 			roomAUrl.classList.add('error');
 		if (roomBUrl.value == "")
@@ -53,9 +62,14 @@ function startGame() {
 		return false;
 	}
 
-	var rooms = [{ name: "Room A", url: roomAUrl.value }, { name: "Room B", url: roomBUrl.value }]
+	var gameRoles = document.getElementById('game-roles');
+	var selectedRoles = [...gameRoles.selectedOptions]
+		.map(option => option.value);
 
-	stompClient.send("/app/game/start", {}, JSON.stringify(rooms));
+	var rooms = [{ name: "Lobby", url: lobbyUrl.value }, { name: "Room A", url: roomAUrl.value }, { name: "Room B", url: roomBUrl.value }]
+	var startGameMessage = { selectedRoles: selectedRoles, rooms: rooms};
+
+	stompClient.send("/app/game/start", {}, JSON.stringify(startGameMessage));
 	stompClient.send("/app/lobby/message", {}, JSON.stringify({ 'playerName': 'Admin', message: 'Player Roles Assigned' }));
 }
 
@@ -67,4 +81,20 @@ function resetGame() {
 function startRound(roundNo) {
 
 	stompClient.send("/app/game/startRound", {}, JSON.stringify(roundNo));
+}
+
+
+function selectRoles(){
+
+	var gameRoles = document.getElementById('game-roles');
+	var colourCounter = {'blue-team': 0, 'red-team':0, 'grey-team': 0};
+
+	var selectedRoles = [...gameRoles.selectedOptions]
+		.forEach((option) => {
+			colourCounter[option.classList[0]]++;
+		});
+
+	document.getElementById('blue-role-count').innerHTML = 'b['+colourCounter['blue-team']+"]"
+	document.getElementById('red-role-count').innerHTML = 'r['+colourCounter['red-team']+"]"
+	document.getElementById('grey-role-count').innerHTML = 'g['+colourCounter['grey-team']+"]"
 }

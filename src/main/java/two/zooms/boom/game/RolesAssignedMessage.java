@@ -1,12 +1,13 @@
-package two.zooms.boom;
+package two.zooms.boom.game;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import two.zooms.boom.LobbyMessage;
 
-public class GameStartMessage {
+public class RolesAssignedMessage {
 
 	@Getter @Setter
 	public String playerId;

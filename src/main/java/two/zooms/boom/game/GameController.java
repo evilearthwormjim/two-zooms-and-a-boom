@@ -1,4 +1,4 @@
-package two.zooms.boom;
+package two.zooms.boom.game;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,6 +14,10 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import two.zooms.boom.LobbyMessage;
+import two.zooms.boom.Room;
+import two.zooms.boom.RoundTimerMessage;
+
 @Controller
 public class GameController {
 
@@ -23,22 +27,36 @@ public class GameController {
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
 
+	private static final int ROOM_LOBBY = 0;
+	private static final int ROOM_A = 1;
+	private static final int ROOM_B = 2;
+	
 	private Thread thread;
 	
 	private static final String PLAYER_LISTING_TEXT = "%s: Team (%s) - Role (%s)";
 
 	@MessageMapping("/game/start")
 	@SendTo("/topic/game/start")
-	public GameStartMessage startGame(Room[] rooms) throws Exception {
-		Room roomA = new Room(rooms[0].name, rooms[0].url);
-		Room roomB = new Room(rooms[1].name, rooms[1].url);
-
+	public RolesAssignedMessage startGame(StartGameMessage startGameMessage) throws Exception {
+		
 		resetTimer();
 		
-		gameService.assignTeamRoles(roomA, roomB);
+		Room lobby = new Room(
+				startGameMessage.rooms[ROOM_LOBBY].name, 
+				startGameMessage.rooms[ROOM_LOBBY].url);
+		
+		Room roomA = new Room(
+				startGameMessage.rooms[ROOM_A].name, 
+				startGameMessage.rooms[ROOM_A].url);
+		
+		Room roomB = new Room(
+				startGameMessage.rooms[ROOM_B].name, 
+				startGameMessage.rooms[ROOM_B].url);
+		
+		gameService.assignTeamRoles(startGameMessage.selectedRoles, roomA, roomB);
 		HashMap<String, Player> players = gameService.getPlayers();
-		//Send list of other players
-		GameStartMessage gameStartMessage = new GameStartMessage();
+		
+		RolesAssignedMessage rolesAssignedMessage = new RolesAssignedMessage();
 		
 		for (String k : players.keySet()) {
 			Player player = players.get(k);
@@ -46,7 +64,7 @@ public class GameController {
 			lobbyMessage.playerId = k;
 			lobbyMessage.playerName = player.name;
 			lobbyMessage.message = String.format(PLAYER_LISTING_TEXT, lobbyMessage.playerName, "?", "?");
-			gameStartMessage.playerListings.add(lobbyMessage);
+			rolesAssignedMessage.playerListings.add(lobbyMessage);
 			
 			// Publish roles to individual players
 			SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
@@ -60,19 +78,28 @@ public class GameController {
 		String time = new SimpleDateFormat("HH:mm").format(new Date());
 		LobbyMessage lobbyMessage = new LobbyMessage();
 		
-		lobbyMessage.message = String.format("(%s) Admin: <a href=\"%s\" target=\"_blank\"> Room A Link</a> created", 
+		lobbyMessage.message = String.format("(%s) Admin: <a href=\"%s\" target=\"_blank\"> %s Link</a>", 
 				time,
-				rooms[0].url);
+				lobby.url,
+				lobby.name);
 		
 		simpMessagingTemplate.convertAndSend("/topic/lobby", lobbyMessage);
 		
-		lobbyMessage.message = String.format("(%s) Admin: <a href=\"%s\" target=\\\"_blank\\\"> Room B Link</a> created", 
+		lobbyMessage.message = String.format("(%s) Admin: <a href=\"%s\" target=\"_blank\"> %s Link</a> created", 
 				time,
-				rooms[1].url);
+				roomA.url,
+				roomA.name);
 		
 		simpMessagingTemplate.convertAndSend("/topic/lobby", lobbyMessage);
 		
-		return gameStartMessage;
+		lobbyMessage.message = String.format("(%s) Admin: <a href=\"%s\" target=\\\"_blank\\\"> %s Link</a> created", 
+				time,
+				roomB.url,
+				roomB.name);
+		
+		simpMessagingTemplate.convertAndSend("/topic/lobby", lobbyMessage);
+		
+		return rolesAssignedMessage;
 	}
 
 	

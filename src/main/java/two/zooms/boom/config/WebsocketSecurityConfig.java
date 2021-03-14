@@ -1,4 +1,4 @@
-package two.zooms.boom;
+package two.zooms.boom.config;
 
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;

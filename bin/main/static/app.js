@@ -2,6 +2,8 @@ var stompClient = null;
 var mySessionId = "";
 var myTeam = "";
 var myRole = "";
+var myPlayer = "";
+var playerCardAreaClone = null;
 
 function connect() {
 
@@ -132,7 +134,9 @@ function updatePlayerStatuses(playerListingMessage) {
 }
 
 function updatePlayerArea(player) {
-	
+	myPlayer = player;
+	playerCardAreaClone = document.querySelector('#player-card-area').cloneNode(true);
+
 	var playerRoom = document.getElementById('player-room-link');
 	var playerTeam = document.getElementById('player-team');
 	var playerRole = document.getElementById('player-role');
@@ -211,4 +215,10 @@ function removeAllChildNodes(parent) {
 	while (parent.firstChild) {
 		parent.removeChild(parent.lastChild);
 	}
+}
+
+function refreshRole(){
+	var playerCardArea = document.querySelector('#player-card-area').cloneNode(true);
+	playerCardArea.innerHTML = playerCardAreaClone.innerHTML;
+	updatePlayerArea(myPlayer);
 }

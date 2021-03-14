@@ -67,14 +67,35 @@ a {
 
 .blue-team {
 	background-color: #3a56a5;
+	color: white;
 }
 .red-team {
 	background-color: #ee1c26;
+	color: white;
 }
 .grey-team {
 	background-color: #918585;
+	color: white;
 }
 
+#blue-role-count{
+	font-weight: bold;
+	font-size: small;
+	color: #3a56a5;
+	flex:20px;
+}
+#red-role-count{
+	font-weight: bold;
+	font-size: small;
+	color: #ee1c26;
+	flex:20px;
+}
+#grey-role-count{
+	font-weight: bold;
+	font-size: small;
+	color: #918585;
+	flex:20px;
+}
 
 .admin-area-link {
 
@@ -95,19 +116,23 @@ a {
 
 .lobby-message-box{
 
-	width: 240px;
+	width: 300px;
 }
 
-.admin-area-link  .admin-area-label{
+.admin-area-label{
 
 	width: 150px;
 	vertical-align: bottom;
+	font-size: small;
 }
 
 .admin-area-link input{
 	width: 300px;
 }
-
+#game-roles{
+	width:450px;
+	margin-bottom: 5px;
+}
 .player-area-label {
 	box-sizing: border-box;
 	width: 100px;
