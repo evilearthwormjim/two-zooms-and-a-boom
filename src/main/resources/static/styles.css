@@ -264,22 +264,34 @@ a {
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 .role-president{
-	height: 190px;
+	width: 200px;
 	margin: 0 auto;
 	content: url('images/president.png');
 }
 .role-bomb{
-	height: 190px;
+	width: 200px;
 	margin: 0 auto;
 	content: url('images/bomb.png');
 }
 .role-gambler{
-	height: 190px;
+	width: 200px;
 	margin: 0 auto;
 	content: url('images/gambler.png');
 }
 .role-mook{
-	height: 190px;
+	width: 200px;
 	margin: 0 auto;
 	content: url('images/mook.png');
+}
+
+.role-agent{
+	width: 200px;
+	margin: 0 auto;
+	content: url('images/agent.png');
+}
+
+.role-bouncer{
+	width: 200px;
+	margin: 0 auto;
+	content: url('images/bouncer.png');
 }

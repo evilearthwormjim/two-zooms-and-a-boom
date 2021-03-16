@@ -83,7 +83,7 @@ public class TeamRoleDefinitions {
     	
     	availableTeamRoles.put(ROLE_BOUNCER+BLUE_TEAM, 
     			new TeamRole(BLUE_TEAM, 
-    					ROLE_GAMBLER, 
+    					ROLE_BOUNCER, 
     					ROLE_GAMBLER_DESCRIPTION));
     	
     	availableTeamRoles.put(ROLE_BOUNCER+RED_TEAM, 
