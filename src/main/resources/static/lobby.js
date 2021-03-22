@@ -52,10 +52,11 @@ function updateLobbyListing(lobbyListingMessage) {
 
 function sendLobbyMessage(playerName){
 
-	var message = document.getElementById("lobby-message").value;
+	var message = document.getElementById("lobby-message");
 
-	if(message!=""){
+	if(message.value!=""){
 
-		stompClient.send("/app/lobby/message", {}, JSON.stringify({ 'playerName': playerName, message: message }));
+		stompClient.send("/app/lobby/message", {}, JSON.stringify({ 'playerName': playerName, message: message.value }));
+		message.value = "";
 	}
 }
