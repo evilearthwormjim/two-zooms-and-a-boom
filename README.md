@@ -1,11 +1,11 @@
 ## About The Project
 
-
-Two Booms and a Room is a social deduction party game by [Tuesday Night Games](https://www.tuesdayknightgames.com/tworoomsandaboom) where players are divided into 2 rooms and must exchange hostages before the timer runs out.
+Two Zooms and a Boom is a web-app version of Two Booms and a Room - a social deduction party game by [Tuesday Night Games](https://www.tuesdayknightgames.com/tworoomsandaboom) where players are divided into 2 rooms and must exchange the right hostages to complete each team's mission before the timer runs out.
 
 This is a version for anyone who wants to play remotely, using Zoom (or Google Meet etc). Each player will get their team role assigned privately and a link to one of the two rooms. 
 
-This currently has 4 roles: President, Bomb, Gambler, Mook
+Main Roles: President, Bomb, Gambler, Mook
+Optional Roles: Agent, Agoraphobe, Bouncer
 
 ## Getting Started
 
