@@ -17,7 +17,7 @@ You will need Java 11 JRE
 Download the repo, and run:
 
 ```
-./gradelew bootRun
+./gradlew bootRun
 ```
 
 If you're running locally remember to allow inbound requests for port `8080` on your firewall.
